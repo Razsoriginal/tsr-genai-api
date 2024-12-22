@@ -1,3 +1,6 @@
+-- To run this file, you need to install the REST Client extension in Visual Studio Code
+-- Select the code below and right-click, then select "Send Request" to run the code
+
 get http://127.0.0.1:5000
 
 get http://127.0.0.1:5000/ping
@@ -13,6 +16,15 @@ content-type: application/json
 
 -- Summarize Audio
 POST http://127.0.0.1:5000/summarize-ai HTTP/1.1
+content-type: application/json
+
+{
+    "video_url": "https://www.youtube.com/watch?v=ZageOcTQdM0"
+}
+
+
+-- Extrct References
+POST http://127.0.0.1:5000/extract-references HTTP/1.1
 content-type: application/json
 
 {
