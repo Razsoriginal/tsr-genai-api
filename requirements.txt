@@ -1,0 +1,5 @@
+google-generativeai
+yt-dlp
+groq
+Flask
+python-dotenv

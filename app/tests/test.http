@@ -1,0 +1,29 @@
+get http://127.0.0.1:5000
+
+get http://127.0.0.1:5000/ping
+
+-- Transcribe Audio
+POST http://127.0.0.1:5000/transcribe-ai HTTP/1.1
+content-type: application/json
+
+{
+    "video_url": "https://www.youtube.com/watch?v=ZageOcTQdM0"
+}
+
+
+-- Summarize Audio
+POST http://127.0.0.1:5000/summarize-ai HTTP/1.1
+content-type: application/json
+
+{
+    "video_url": "https://www.youtube.com/watch?v=ZageOcTQdM0"
+}
+
+
+-- Generate Articles
+POST http://127.0.0.1:5000/generate-article-ai HTTP/1.1
+content-type: application/json
+
+{
+    "video_url": "https://www.youtube.com/watch?v=ZageOcTQdM0"
+}
