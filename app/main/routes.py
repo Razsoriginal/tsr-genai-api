@@ -1,11 +1,11 @@
 # app/main/routes.py
 from flask import Blueprint, request, jsonify
 import time
+from app.core import gen_article_data
 from app.core.download_audio import download_audio
 from app.core.genai import genai_custom
 from app.core.audio_processing import audio_processing
-from app.utils.prompts import sys_prompt, ref_prompt, ref_out, article_format
-import os
+from app.utils.prompts import ref_prompt, ref_format, article_html_prompt
 
 main_bp = Blueprint('main', __name__)
 
@@ -34,7 +34,7 @@ def transcribe_ai():
         response = audio_processing(video_url, "transcribe")
         return jsonify(response)
     except Exception as e:
-        return jsonify({'error': 'Failed to summarize audio', 'details': e}), 500
+        return jsonify({'error': 'Failed to summarize audio', 'details': str(e)}), 500
 
 @main_bp.route('/summarize-ai', methods=['POST'])
 def summarize_ai():
@@ -54,57 +54,44 @@ def extract_references():
         return jsonify({'error': 'Video URL is required'}), 400
     try:
         print("\nExtracting References...")
-        formatted_ref_prompt = ref_prompt.format(video_url=video_url, ref_out=ref_out)
-        references_genai = genai_custom(formatted_ref_prompt)
+        formatted_ref_prompt = ref_prompt.format(video_url=video_url, ref_format=ref_format)
+        references_genai = genai_custom(formatted_ref_prompt, config="references")
         return jsonify({'references': references_genai})
     except Exception as e:
         print(f"Error during reference extraction: {e}")
         return jsonify({'error': 'Failed to extract references', 'details': str(e)}), 500
 
-@main_bp.route('/generate-article-ai', methods=['POST'])
-def generate_article_ai():
+@main_bp.route('/generate-article-json', methods=['POST'])
+def generate_article_json():
     video_url = request.json.get('video_url')
     if not video_url:
         return jsonify({'error': 'Video URL is required'}), 400
-
-    output_directory = "./data/audio/"
-    yt_title, audio_path = download_audio(video_url, output_directory)
-
     try:
-        print("\nGenerating article from audio...")
-
-        transcribe_response = genai_custom(f"Transcribe the audio of the video titled '{yt_title}'.", audio_path)
-
-        summarize_response = genai_custom(f"Summarize the transcription of the video titled '{yt_title}'.", audio_path)
-
-        formatted_ref_prompt = ref_prompt.format(video_url=video_url, ref_out=ref_out)
-        references_genai = genai_custom(formatted_ref_prompt)
-
-        formatted_sys_prompt = sys_prompt.format(
-            yt_title=yt_title,
-            video_url=video_url,
-            transcription_genai=transcribe_response,
-            references_genai=references_genai,
-            summary_genai=summarize_response,
-            article_format=article_format
-        )
-
-        article_response = genai_custom(formatted_sys_prompt)
-
-        response_data = {
-            'transcription': transcribe_response, 
-            'summary': summarize_response, 
-            'references': references_genai,      
-            'article': article_response          
-        }
-
+        response_data = gen_article_data(video_url, config="article-json")
         return jsonify(response_data)
-
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
         return jsonify({'error': 'Failed to generate article', 'details': str(e)}), 500
 
-    finally:
-        if os.path.exists(audio_path):
-            os.remove(audio_path)
-            print(f"Deleted downloaded audio: {audio_path}")
+@main_bp.route('/generate-article-html', methods=['POST'])
+def generate_article_html():
+    article_json = request.json.get('artticle_json')
+    video_url = request.json.get('video_url')
+    if not video_url:
+        return jsonify({'error': 'Invalid request'}), 400
+    try:
+        if article_json:
+            print("Generate Article HTML...")
+            formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
+            html_genai = genai_custom(formatted_html_prompt)
+            return jsonify({'references': html_genai})
+        else:
+            get_article_data = gen_article_data(video_url, config="article-json")
+            article_json = get_article_data.get('article')
+            formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
+            html_genai = genai_custom(formatted_html_prompt, config="article-html")
+            return jsonify({'references': html_genai})
+    except Exception as e:
+        print(f"Error during reference extraction: {e}")
+        return jsonify({'error': 'Failed to extract references', 'details': str(e)}), 500
