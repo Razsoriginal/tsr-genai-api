@@ -7,7 +7,7 @@ genai.configure(api_key=Config.VERTEX_API_KEY)
 
 model = genai.GenerativeModel('models/gemini-2.0-flash-exp')
 
-def genai_custom(prompt, config, audio_path=None, model=model): 
+def genai_custom(prompt, config=None, audio_path=None, model=model): 
     try:
         safety_config = {
             HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,

@@ -41,7 +41,7 @@ content-type: application/json
 }
 
 -- Generate Articles HTML (without passing the article json)
-POST http://127.0.0.1:5000/generate-article-ai HTTP/1.1
+POST http://127.0.0.1:5000/generate-article-html HTTP/1.1
 content-type: application/json
 
 {

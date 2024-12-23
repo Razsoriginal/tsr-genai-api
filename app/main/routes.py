@@ -1,7 +1,7 @@
 # app/main/routes.py
 from flask import Blueprint, request, jsonify
 import time
-from app.core import gen_article_data
+from app.core.gen_article_data import gen_article_data
 from app.core.download_audio import download_audio
 from app.core.genai import genai_custom
 from app.core.audio_processing import audio_processing
@@ -56,7 +56,7 @@ def extract_references():
         print("\nExtracting References...")
         formatted_ref_prompt = ref_prompt.format(video_url=video_url, ref_format=ref_format)
         references_genai = genai_custom(formatted_ref_prompt, config="references")
-        return jsonify({'references': references_genai})
+        return jsonify({references_genai})
     except Exception as e:
         print(f"Error during reference extraction: {e}")
         return jsonify({'error': 'Failed to extract references', 'details': str(e)}), 500
@@ -68,7 +68,7 @@ def generate_article_json():
         return jsonify({'error': 'Video URL is required'}), 400
     try:
         response_data = gen_article_data(video_url, config="article-json")
-        return jsonify(response_data)
+        return response_data
     except ValueError as ve:
         return jsonify({'error': str(ve)}), 400
     except Exception as e:
@@ -85,13 +85,13 @@ def generate_article_html():
             print("Generate Article HTML...")
             formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
             html_genai = genai_custom(formatted_html_prompt)
-            return jsonify({'references': html_genai})
+            return html_genai
         else:
             get_article_data = gen_article_data(video_url, config="article-json")
             article_json = get_article_data.get('article')
             formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
             html_genai = genai_custom(formatted_html_prompt, config="article-html")
-            return jsonify({'references': html_genai})
+            return html_genai
     except Exception as e:
         print(f"Error during reference extraction: {e}")
         return jsonify({'error': 'Failed to extract references', 'details': str(e)}), 500
