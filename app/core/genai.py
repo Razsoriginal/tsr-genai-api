@@ -35,11 +35,12 @@ def genai_custom(prompt, config=None, audio_path=None, model=model):
                 response_mime_type="application/json",
                 response_schema=ref_format
             )
-        elif config == "transcribe":
-            generation_config = genai.GenerationConfig(
-                response_mime_type="application/json",
-                response_schema=transcribe_format
-            )
+        # elif config == "transcribe":
+        #     generation_config = genai.GenerationConfig(
+        #         response_mime_type="application/json",
+        #         response_schema=transcribe_format
+        #     )
+        # The transcribe config is not working as expected.
 
         if audio_path is None:
             return model.generate_content(

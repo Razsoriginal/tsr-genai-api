@@ -10,7 +10,7 @@ POST http://127.0.0.1:5000/transcribe-ai HTTP/1.1
 content-type: application/json
 
 {
-    "video_url": "https://www.youtube.com/watch?v=ZageOcTQdM0"
+    "video_url": "https://youtu.be/sj_Uq6zsqPo?si=PXANunv5JDZY8Per"
 }
 
 
