@@ -56,7 +56,7 @@ def extract_references():
         print("\nExtracting References...")
         formatted_ref_prompt = ref_prompt.format(video_url=video_url, ref_format=ref_format)
         references_genai = genai_custom(formatted_ref_prompt, config="references")
-        return jsonify({references_genai})
+        return jsonify(references_genai)
     except Exception as e:
         print(f"Error during reference extraction: {e}")
         return jsonify({'error': 'Failed to extract references', 'details': str(e)}), 500
@@ -68,7 +68,7 @@ def generate_article_json():
         return jsonify({'error': 'Video URL is required'}), 400
     try:
         response_data = gen_article_data(video_url, config="article-json")
-        return response_data
+        return jsonify(response_data)
     except ValueError as ve:
         return jsonify({'error': str(ve)}), 400
     except Exception as e:
@@ -84,14 +84,14 @@ def generate_article_html():
         if article_json:
             print("Generate Article HTML...")
             formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
-            html_genai = genai_custom(formatted_html_prompt)
+            html_genai = genai_custom(formatted_html_prompt, config="article-html")
             return html_genai
         else:
             get_article_data = gen_article_data(video_url, config="article-json")
-            article_json = get_article_data.get('article')
+            article_json = get_article_data['article']
             formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
             html_genai = genai_custom(formatted_html_prompt, config="article-html")
-            return html_genai
+            return jsonify(html_genai)
     except Exception as e:
         print(f"Error during reference extraction: {e}")
-        return jsonify({'error': 'Failed to extract references', 'details': str(e)}), 500
+        return jsonify({'error': 'Failed to generate article', 'details': str(e)}), 500

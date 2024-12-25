@@ -46,13 +46,10 @@ ref_format = {
                     "items": {
                         "type": "object",
                         "properties": {
-                            "book_name": {"type": "string"},
-                            "volume": {"type": "integer"},
-                            "page": {"type": "integer"},
-                            "hadith_number": {"type": "integer"},
+                            "reference": {"type": "string"},
                             "text": {"type": "string"}
                         },
-                        "required": ["book_name", "volume", "page", "hadith_number", "text"]
+                        "required": ["reference", "text"]
                     }
                 },
                 "quranic_verses": {
@@ -75,16 +72,14 @@ ref_format = {
 }
 
 ref_prompt = """
-  Please extract all Islamic references from the video at the following URL: '{video_url}'. 
+  Please extract all Islamic references mentioned in the video at the following URL: '{video_url}'. 
   Don't include any external sources or references not mentioned in the video. Nor search online for any additional references.
   Specifically, identify and provide the complete references for:
 
   Hadiths: Include the full book name, volume, page number, and Hadith number wherever possible.
   Quranic Verses: Provide the Surah name and verse number.
   Ensure accuracy and completeness in the references. 
-  
-  References: {ref_format}
-  return: References
+
 """
 
 article_format = {
@@ -112,13 +107,10 @@ article_format = {
                                     "items": {
                                         "type": "object",
                                         "properties": {
-                                            "book_name": {"type": "string"},
-                                            "volume": {"type": "integer"},
-                                            "page": {"type": "integer"},
-                                            "hadith_number": {"type": "integer"},
+                                            "reference": {"type": "string"},
                                             "text": {"type": "string"}
                                         },
-                                        "required": ["book_name", "volume", "page", "hadith_number", "text"]
+                                        "required": ["reference", "text"]
                                     }
                                 },
                                 "quranic_verses": {
@@ -146,7 +138,7 @@ article_format = {
                             "items": {"type": "string"}
                         }
                     },
-                    "required": ["introduction", "key_takeaways", "deep_dive", "benefits_and_applications", "quranic_and_hadith_references", "conclusion", "keywords", "additional_resources"]
+                    "required": ["introduction", "key_takeaways", "deep_dive", "benefits_and_applications", "conclusion", "keywords", "additional_resources"]
                 }
             },
             "required": ["title", "content"]

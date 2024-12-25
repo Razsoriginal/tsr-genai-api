@@ -27,7 +27,7 @@ def genai_custom(prompt, config=None, audio_path=None, model=model):
             )
         elif config == "article-html":
             generation_config = genai.GenerationConfig(
-                response_mime_type="text/html",
+                response_mime_type="application/json",
                 response_schema=None  
             )
         elif config == "references":
@@ -46,6 +46,7 @@ def genai_custom(prompt, config=None, audio_path=None, model=model):
             return model.generate_content(
                 contents=[prompt],
                 safety_settings=safety_config,
+                generation_config=generation_config
             ).to_dict()
 
         with open(audio_path, "rb") as audio_file:
