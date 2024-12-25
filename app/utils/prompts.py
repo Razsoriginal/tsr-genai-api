@@ -1,76 +1,151 @@
-ref_out = {
-    "references": {
-      "hadiths": [
-        {
-          "book_name": "str",      
-          "volume": "int",        
-          "page": "int",        
-          "hadith_number": "int", 
-          "text": "str"            
+transcribe_format = {
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "text": {
+                "type": "string",
+            },
+        },
+        "required": ["text"],
+    },
+}
+
+article_html_prompt = """
+You are a web developer skilled in converting JSON data into HTML for a web blog. Below is the JSON data containing an article with attributes. Generate a well-structured HTML format for a web blog based on the provided JSON data.
+
+Requirements:
+The HTML should include a <header>, <main>, and <footer> structure.
+Ensure the title of the article is styled prominently within an <h1> tag.
+Render any metadata like author, date, or tags in an organized manner (e.g., in a <div> with class metadata).
+Ensure a clean and responsive layout using basic inline CSS or Bootstrap classes.
+Use appropriate HTML tags for the article content:
+  Headings (<h2>, <h3>).
+  Video (<video>).
+  Paragraphs (<p>).
+  Lists (<ul>, <ol>).
+  Hyperlinks (<a>).
+
+yotube_url: {video_url}
+JSON Data: {article_json}
+
+Desired Output:
+Generate the HTML using the structure mentioned above and ensure it renders the article in a web-friendly layout.
+Ensure all content is semantic and visually appealing for a blog.
+"""
+
+
+ref_format = {
+    "type": "object",
+    "properties": {
+        "references": {
+            "type": "object",
+            "properties": {
+                "hadiths": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "reference": {"type": "string"},
+                            "text": {"type": "string"}
+                        },
+                        "required": ["reference", "text"]
+                    }
+                },
+                "quranic_verses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "surah_name": {"type": "string"},
+                            "verse_number": {"type": "string"},
+                            "text": {"type": "string"}
+                        },
+                        "required": ["surah_name", "verse_number", "text"]
+                    }
+                }
+            },
+            "required": ["hadiths", "quranic_verses"]
         }
-      ],
-      "quranic_verses": [
-        {
-          "surah_name": "str",     
-          "verse_number": "str",   
-          "text": "str"          
-        }
-      ]
-    }
-  }
+    },
+    "required": ["references"]
+}
 
 ref_prompt = """
-  Please extract all Islamic references from the video at the following URL: '{video_url}'. 
+  Please extract all Islamic references mentioned in the video at the following URL: '{video_url}'. 
   Don't include any external sources or references not mentioned in the video. Nor search online for any additional references.
   Specifically, identify and provide the complete references for:
 
   Hadiths: Include the full book name, volume, page number, and Hadith number wherever possible.
   Quranic Verses: Provide the Surah name and verse number.
   Ensure accuracy and completeness in the references. 
-  
-  References: {ref_out}
-  return: References
+
 """
 
-
 article_format = {
-    "blog_post": {
-      "title": "str",
-      "content": {
-        "introduction": "str",
-        "key_takeaways": [
-          "str"
-        ],
-        "deep_dive": "str",
-        "benefits_and_applications": "str",
-        "quranic_and_hadith_references": {
-          "hadiths": [
-            {
-              "book_name": "str",        
-              "volume": "int",         
-              "page": "int",          
-              "hadith_number": "int",  
-              "text": "str"            
-            }
-          ],
-          "quranic_verses": [
-            {
-              "surah_name": "str",    
-              "verse_number": "str",    
-              "text": "str"            
-            }
-          ]
-        },
-        "conclusion": "str",
-        "keywords": [
-          "str"
-        ],
-        "additional_resources": [
-          "str"
-        ]
-      }
-    }
-  }
+    "type": "object",
+    "properties": {
+        "blog_post": {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "content": {
+                    "type": "object",
+                    "properties": {
+                        "introduction": {"type": "string"},
+                        "key_takeaways": {
+                            "type": "array",
+                            "items":  {"type": "string"}
+                        },
+                        "deep_dive": {"type": "string"},
+                        "benefits_and_applications": {"type": "string"},
+                        "quranic_and_hadith_references": {
+                            "type": "object",
+                            "properties": {
+                                "hadiths": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "reference": {"type": "string"},
+                                            "text": {"type": "string"}
+                                        },
+                                        "required": ["reference", "text"]
+                                    }
+                                },
+                                "quranic_verses": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "surah_name": {"type": "string"},
+                                            "verse_number": {"type": "string"},
+                                            "text": {"type": "string"}
+                                        },
+                                        "required": ["surah_name", "verse_number", "text"]
+                                    }
+                                }
+                            },
+                           "required":["hadiths","quranic_verses"]
+                        },
+                        "conclusion": {"type": "string"},
+                        "keywords": {
+                            "type": "array",
+                            "items": {"type": "string"}
+                        },
+                        "additional_resources": {
+                            "type": "array",
+                            "items": {"type": "string"}
+                        }
+                    },
+                    "required": ["introduction", "key_takeaways", "deep_dive", "benefits_and_applications", "conclusion", "keywords", "additional_resources"]
+                }
+            },
+            "required": ["title", "content"]
+        }
+    },
+    "required": ["blog_post"]
+}
 
 sys_prompt = """ 
 
@@ -80,8 +155,6 @@ sys_prompt = """
   - **Video Title:** {yt_title}  
   - **Video Link:** {video_url}  
   - **Video Transcription:** {transcription_genai}  
-  - **References:** {references_genai}
-  - **Video Summary:** {summary_genai}  
 
   ### **Guidelines for Writing:**
 
@@ -112,9 +185,4 @@ sys_prompt = """
   9. **Call to Action:** Encourage readers to explore further (e.g., watch the video, engage with related resources, subscribe to the channel).  
 
   10. **Interactive Elements:** Suggest including visuals, infographics, or bullet points for key concepts to improve readability.  
-
-  Use this JSON schema:
-
-  Article = {article_format}
-  Return: Article
 """
