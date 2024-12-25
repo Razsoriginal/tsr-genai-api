@@ -15,33 +15,30 @@ def gen_article_data(video_url, config=None):
     try:
         print("\nGenerating article from audio...")
 
-        transcribe_response = audio_processing(video_url, "transcribe")
-        print("Generating Transcription")
+        transcribe_response = audio_processing(video_url=video_url, operation="transcribe", yt_title=yt_title, audio_path=audio_path, delete_audio=False)
 
-        summarize_response = audio_processing(video_url, "summarize")
-        print("Generating Summary")
+        summarize_response = audio_processing(video_url=video_url, operation="summarize", yt_title=yt_title, audio_path=audio_path, delete_audio=False)
 
         formatted_ref_prompt = ref_prompt.format(video_url=video_url, ref_format=ref_format)
-        references_genai = genai_custom(formatted_ref_prompt, config="references")
-        print("Generating References")
+        references_genai = audio_processing(video_url, "references", custom_prompt=formatted_ref_prompt, yt_title=yt_title, audio_path=audio_path, delete_audio=False)
 
         formatted_sys_prompt = sys_prompt.format(
             yt_title=yt_title,
             video_url=video_url,
-            transcription_genai=transcribe_response['candidates'][0]['content']['parts'][0]['text'],
+            transcription_genai=transcribe_response['candidates'][0],
             #references_genai=references_genai, // Add this in prompt:  - **References:** {references_genai} 
             #summary_genai=summarize_response, // Add this in prompt:  - **Summary:** {summary_genai}
             article_format=article_format
         )
 
-        article_response = genai_custom(formatted_sys_prompt, config="article-json", audio_path=audio_path)
+        article_response = audio_processing(video_url, "article-html", custom_prompt=formatted_sys_prompt, yt_title=yt_title, audio_path=audio_path, delete_audio=True)
         print("Generatin Article")
 
         response_data = {
-            'transcription': transcribe_response['candidates'][0]['content']['parts'][0]['text'], 
-            'summary': summarize_response['candidates'][0]['content']['parts'][0]['text'], 
-            'references': references_genai['candidates'][0]['content']['parts'][0]['text'],      
-            'article': article_response['candidates'][0]['content']['parts'][0]['text']          
+            'transcription': transcribe_response['candidates'][0], 
+            'summary': summarize_response['candidates'][0], 
+            'references': references_genai['candidates'][0],      
+            'article': article_response['candidates'][0]          
         }
 
         return response_data

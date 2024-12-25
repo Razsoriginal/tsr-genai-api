@@ -74,24 +74,25 @@ def generate_article_json():
     except Exception as e:
         return jsonify({'error': 'Failed to generate article', 'details': str(e)}), 500
 
-@main_bp.route('/generate-article-html', methods=['POST'])
-def generate_article_html():
-    article_json = request.json.get('artticle_json')
-    video_url = request.json.get('video_url')
-    if not video_url:
-        return jsonify({'error': 'Invalid request'}), 400
-    try:
-        if article_json:
-            print("Generate Article HTML...")
-            formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
-            html_genai = genai_custom(formatted_html_prompt, config="article-html")
-            return html_genai
-        else:
-            get_article_data = gen_article_data(video_url, config="article-json")
-            article_json = get_article_data['article']
-            formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
-            html_genai = genai_custom(formatted_html_prompt, config="article-html")
-            return jsonify(html_genai)
-    except Exception as e:
-        print(f"Error during reference extraction: {e}")
-        return jsonify({'error': 'Failed to generate article', 'details': str(e)}), 500
+# Deprecated route as we can generate HTML from the article JSON directly in frontend
+# @main_bp.route('/generate-article-html', methods=['POST'])
+# def generate_article_html():
+#     article_json = request.json.get('artticle_json')
+#     video_url = request.json.get('video_url')
+#     if not video_url:
+#         return jsonify({'error': 'Invalid request'}), 400
+#     try:
+#         if article_json:
+#             print("Generate Article HTML...")
+#             formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
+#             html_genai = genai_custom(formatted_html_prompt, config="article-html")
+#             return html_genai
+#         else:
+#             get_article_data = gen_article_data(video_url, config="article-json")
+#             article_json = get_article_data['article']
+#             formatted_html_prompt = article_html_prompt.format(video_url=video_url, article_json=article_json)
+#             html_genai = genai_custom(formatted_html_prompt, config="article-html")
+#             return jsonify(html_genai)
+#     except Exception as e:
+#         print(f"Error during reference extraction: {e}")
+#         return jsonify({'error': 'Failed to generate article', 'details': str(e)}), 500
