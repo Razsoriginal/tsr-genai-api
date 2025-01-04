@@ -89,4 +89,4 @@ ENV/
 .ropeproject
 
 # temp data
-app/data/audio/
+/data/audio/

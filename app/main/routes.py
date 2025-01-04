@@ -1,8 +1,8 @@
 # app/main/routes.py
 from flask import Blueprint, request, jsonify
 import time
-from app.core.gen_article_data import gen_article_data
 from app.core.download_audio import download_audio
+from app.core.gen_article_data import gen_article_data
 from app.core.genai import genai_custom
 from app.core.audio_processing import audio_processing
 from app.utils.prompts import ref_prompt, ref_format, article_html_prompt
@@ -55,7 +55,7 @@ def extract_references():
     try:
         print("\nExtracting References...")
         formatted_ref_prompt = ref_prompt.format(video_url=video_url, ref_format=ref_format)
-        references_genai = genai_custom(formatted_ref_prompt, config="references")
+        references_genai = audio_processing(video_url, "references", custom_prompt=formatted_ref_prompt)
         return jsonify(references_genai)
     except Exception as e:
         print(f"Error during reference extraction: {e}")
@@ -73,6 +73,7 @@ def generate_article_json():
         return jsonify({'error': str(ve)}), 400
     except Exception as e:
         return jsonify({'error': 'Failed to generate article', 'details': str(e)}), 500
+        
 
 # Deprecated route as we can generate HTML from the article JSON directly in frontend
 # @main_bp.route('/generate-article-html', methods=['POST'])
