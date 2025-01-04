@@ -3,3 +3,4 @@ yt-dlp
 groq
 Flask
 python-dotenv
+Flask-CORS

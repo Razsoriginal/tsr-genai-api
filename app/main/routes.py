@@ -5,7 +5,7 @@ from app.core.download_audio import download_audio
 from app.core.gen_article_data import gen_article_data
 from app.core.genai import genai_custom
 from app.core.audio_processing import audio_processing
-from app.utils.prompts import ref_prompt, ref_format, article_html_prompt
+from app.utils.prompts import ref_prompt, ref_format
 
 main_bp = Blueprint('main', __name__)
 
@@ -73,7 +73,6 @@ def generate_article_json():
         return jsonify({'error': str(ve)}), 400
     except Exception as e:
         return jsonify({'error': 'Failed to generate article', 'details': str(e)}), 500
-        
 
 # Deprecated route as we can generate HTML from the article JSON directly in frontend
 # @main_bp.route('/generate-article-html', methods=['POST'])
