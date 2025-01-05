@@ -27,7 +27,7 @@ def genai_custom(prompt, config=None, audio_path=None, model=model):
             )
         elif config == "article-html":
             generation_config = genai.GenerationConfig(
-                response_mime_type="application/json",
+                response_mime_type="text/plain",
                 response_schema=None  
             )
         elif config == "references":

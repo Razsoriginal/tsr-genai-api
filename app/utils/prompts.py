@@ -185,4 +185,6 @@ sys_prompt = """
   9. **Call to Action:** Encourage readers to explore further (e.g., watch the video, engage with related resources, subscribe to the channel).  
 
   10. **Interactive Elements:** Suggest including visuals, infographics, or bullet points for key concepts to improve readability.  
+
+  Return the article without any explnation.
 """

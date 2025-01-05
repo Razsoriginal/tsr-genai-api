@@ -1,9 +1,7 @@
 # app/main/routes.py
 from flask import Blueprint, request, jsonify
 import time
-from app.core.download_audio import download_audio
 from app.core.gen_article_data import gen_article_data
-from app.core.genai import genai_custom
 from app.core.audio_processing import audio_processing
 from app.utils.prompts import ref_prompt, ref_format
 
