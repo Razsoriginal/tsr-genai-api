@@ -1,5 +1,5 @@
 from app.core.download_audio import download_audio
-from app.core.genai import genai_custom
+from app.core.genai import genai_custom 
 import os
 
 def audio_processing(video_url, operation, custom_prompt=None, yt_title=None, audio_path=None, delete_audio=True):
@@ -11,8 +11,10 @@ def audio_processing(video_url, operation, custom_prompt=None, yt_title=None, au
 
         prompt = custom_prompt if custom_prompt else f"{operation.capitalize()} the audio of the video '{yt_title}'."
         print(f"\nProcessing audio for operation: {operation}...")
-        response = genai_custom(prompt, audio_path=audio_path, config=operation)
-        return response
+
+        for chunk in genai_custom(prompt, audio_path=audio_path, config=operation):
+            if chunk:
+                yield chunk
 
     except Exception as e:
         raise RuntimeError(f"Audio processing failed: {e}")

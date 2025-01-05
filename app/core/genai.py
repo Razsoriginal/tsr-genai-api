@@ -21,24 +21,24 @@ def genai_custom(prompt, config=None, audio_path=None):
   }
 
   generation_config = genai.GenerationConfig(
-      response_mime_type="text/plain", response_schema=None
+      response_mime_type="text/plain", response_schema=None, stream=True
   )
 
   if config:
     if config == "article-json":
       generation_config = genai.GenerationConfig(
           response_mime_type="application/json",
-          response_schema=article_format
+          response_schema=article_format, stream=True
       )
     elif config == "article-html":
       generation_config = genai.GenerationConfig(
           response_mime_type="text/plain",
-          response_schema=None
+          response_schema=None, stream=True
       )
     elif config == "references":
       generation_config = genai.GenerationConfig(
           response_mime_type="application/json",
-          response_schema=ref_format
+          response_schema=ref_format, stream=True
       )
 
   contents = [prompt]
@@ -51,11 +51,15 @@ def genai_custom(prompt, config=None, audio_path=None):
     })
 
   try:
-    return model.generate_content(
+    stream = model.generate_content(
         contents=contents,
         safety_settings=safety_config,
         generation_config=generation_config
-    ).to_dict()
+    )
+
+    for response in stream:
+      yield response.text 
+
   except Exception as e:
     print(f"An error occurred during generation: {e}")
-    return None
+    yield None
